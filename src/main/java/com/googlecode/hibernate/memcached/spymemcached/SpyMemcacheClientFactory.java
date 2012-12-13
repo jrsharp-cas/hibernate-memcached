@@ -26,6 +26,7 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     public static final String PROP_DAEMON_MODE = Config.PROP_PREFIX + "daemonMode";
     public static final String PROP_USERNAME = Config.PROP_PREFIX + "username";
     public static final String PROP_PASSWORD = Config.PROP_PREFIX + "password";
+    public static final String PROP_CLIENT_MODE = Config.PROP_PREFIX + "clientMode";
     private final PropertiesHelper properties;
 
     public SpyMemcacheClientFactory(PropertiesHelper properties) {
@@ -62,7 +63,7 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     }
 
     private DefaultConnectionFactory buildDefaultConnectionFactory() {
-        return new DefaultConnectionFactory(getOperationQueueLength(), getReadBufferSize(), getHashAlgorithm()) {
+        return new DefaultConnectionFactory(getClientMode(), getOperationQueueLength(), getReadBufferSize(), getHashAlgorithm()) {
             @Override
             public long getOperationTimeout() {
                 return getOperationTimeoutMillis();
@@ -100,7 +101,7 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     }
 
     private BinaryConnectionFactory buildBinaryConnectionFactory() {
-        return new BinaryConnectionFactory(getOperationQueueLength(), getReadBufferSize(), getHashAlgorithm()) {
+        return new BinaryConnectionFactory(getClientMode(), getOperationQueueLength(), getReadBufferSize(), getHashAlgorithm()) {
             @Override
             public long getOperationTimeout() {
                 return getOperationTimeoutMillis();
@@ -150,6 +151,10 @@ public class SpyMemcacheClientFactory implements MemcacheClientFactory {
     public boolean isDaemonMode() {
         return properties.getBoolean(PROP_DAEMON_MODE, false);
     }
+
+	public ClientMode getClientMode() {
+		return ClientMode.valueOf(properties.get(PROP_CLIENT_MODE, "Static"));
+	}
 
     public HashAlgorithm getHashAlgorithm() {
         return properties.getEnum(PROP_HASH_ALGORITHM,
